@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<title>
+Tic Tac Toe
+</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+img {
+display: block;
+margin-left: auto;
+margin-right: auto;
+}
+</style>
+<style>
+body {
+  margin: 0;
+  background-color: LightGray;
+}
+
+.topnav {
+  overflow: hidden;
+  background-color: #333;
+}
+
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+}
+</style>
+<link rel="stylesheet" href="style.css">
+</head>
+<body> 
+
+<!--This is my attempt at putting sidetabs into my website-->
+
+
+<div id="mySidenav" class="topnav">
+    <a href="#" class="w3-bar-item w3-button" onclick="openTab('Introduction')">Introduction</a>
+    <a href="#" class="w3-bar-item w3-button" onclick="openTab('Hobby')">What is it?</a>
+    <a href="#" class="w3-bar-item w3-button" onclick="openTab('Learn')">Languages and Platforms</a>
+    <a href="#" class="w3-bar-item w3-button" onclick="openTab('Innovations')">Features</a>
+    <a href="#" class="w3-bar-item w3-button" onclick="openTab('Facts')">Last Updated</a>
+ </div>
+
+    <script>
+         function openTab(tabName) {
+         var i;
+         var x = document.getElementsByClassName("tab");
+         for (i = 0; i < x.length; i++) {
+         x[i].style.display = "none";  
+      }
+      document.getElementById(tabName).style.display = "block";  
+    }
+    </script>
+
+<!--The current ending of the sidetab project-->
+
+<div id="Introduction" class="w3-container tab">
+ <h1 title="Our Final Project!" style="color:red; text-align:center;">Tic Tac Toe AI</h1>
+<hr>
+<p style="text-align:center;"><a href="mailto:brindyneschultz@lewisu.edu">Send Email</a></p>
+
+<!-- Start code from freeCodeCamp.org -->
+
+	<table>
+		<tr>
+			<td class="cell" id="0"></td>
+			<td class="cell" id="1"></td>
+			<td class="cell" id="2"></td>
+		</tr>
+		<tr>
+			<td class="cell" id="3"></td>
+			<td class="cell" id="4"></td>
+			<td class="cell" id="5"></td>
+		</tr>
+		<tr>
+			<td class="cell" id="6"></td>
+			<td class="cell" id="7"></td>
+			<td class="cell" id="8"></td>
+		</tr>
+	</table>
+	<div class="endgame">
+		<div class="text"></div>
+	</div>
+	<button onClick="startGame()">Replay</button>
+
+<style>
+
+td {
+	border:  2px solid #333;
+	height:  100px;
+	width:  100px;
+	text-align:  center;
+	vertical-align:  middle;
+	font-family:  "Comic Sans MS", cursive, sans-serif;
+	font-size:  70px;
+	cursor: pointer;
+}
+
+table {
+	border-collapse: collapse;
+	position: absolute;
+	left: 50%;
+	margin-left: -155px;
+	top: 400px;
+}
+
+table tr:first-child td {
+	border-top: 0;
+}
+
+table tr:last-child td {
+	border-bottom: 0;
+}
+
+table tr td:first-child {
+	border-left: 0;
+}
+
+table tr td:last-child {
+	border-right: 0;
+}
+
+.endgame {
+  display: none;
+  width: 200px;
+  top: 120px;
+  background-color: rgba(205,133,63, 0.8);
+  position: absolute;
+  left: 50%;
+  margin-left: -100px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  text-align: center;
+  border-radius: 5px;
+  color: white;
+  font-size: 2em;
+}
+
+</style>
+
+  <script>
+
+var origBoard;
+const huPlayer = 'O';
+const aiPlayer = 'X';
+const winCombos = [
+	[0, 1, 2],
+	[3, 4, 5],
+	[6, 7, 8],
+	[0, 3, 6],
+	[1, 4, 7],
+	[2, 5, 8],
+	[0, 4, 8],
+	[6, 4, 2]
+]
+
+const cells = document.querySelectorAll('.cell');
+startGame();
+
+function startGame() {
+	document.querySelector(".endgame").style.display = "none";
+	origBoard = Array.from(Array(9).keys());
+	for (var i = 0; i < cells.length; i++) {
+		cells[i].innerText = '';
+		cells[i].style.removeProperty('background-color');
+		cells[i].addEventListener('click', turnClick, false);
+	}
+}
+
+function turnClick(square) {
+	if (typeof origBoard[square.target.id] == 'number') {
+		turn(square.target.id, huPlayer)
+		if (!checkTie()) turn(bestSpot(), aiPlayer);
+	}
+}
+
+function turn(squareId, player) {
+	origBoard[squareId] = player;
+	document.getElementById(squareId).innerText = player;
+	let gameWon = checkWin(origBoard, player)
+	if (gameWon) gameOver(gameWon)
+}
+
+function checkWin(board, player) {
+	let plays = board.reduce((a, e, i) => 
+		(e === player) ? a.concat(i) : a, []);
+	let gameWon = null;
+	for (let [index, win] of winCombos.entries()) {
+		if (win.every(elem => plays.indexOf(elem) > -1)) {
+			gameWon = {index: index, player: player};
+			break;
+		}
+	}
+	return gameWon;
+}
+
+function gameOver(gameWon) {
+	for (let index of winCombos[gameWon.index]) {
+		document.getElementById(index).style.backgroundColor =
+			gameWon.player == huPlayer ? "blue" : "red";
+	}
+	for (var i = 0; i < cells.length; i++) {
+		cells[i].removeEventListener('click', turnClick, false);
+	}
+	declareWinner(gameWon.player == huPlayer ? "You win!" : "You lose.");
+}
+
+function declareWinner(who) {
+	document.querySelector(".endgame").style.display = "block";
+	document.querySelector(".endgame .text").innerText = who;
+}
+
+function emptySquares() {
+	return origBoard.filter(s => typeof s == 'number');
+}
+
+function bestSpot() {
+	return emptySquares()[0];
+}
+
+function checkTie() {
+	if (emptySquares().length == 0) {
+		for (var i = 0; i < cells.length; i++) {
+			cells[i].style.backgroundColor = "green";
+			cells[i].removeEventListener('click', turnClick, false);
+		}
+		declareWinner("Tie Game!")
+		return true;
+	}
+	return false;
+}
+  </script>
+</html>
+
+<!-- End code from freeCodeCamp.org -->
+
+<p title="Our Goal">Our (Brindyn Schultz & Amin Al-Ashqar) goal is to take the program below and tweak it so that the AI that you play against is very good (maybe unbeatable). To do this we will be using a method of AI programming called a Minimax Algorithm, which we will explain under the "what is it" tab.</p>
+</div>
+  
+   
+
+ <div id="Hobby" class="w3-container tab" style="display:none;">   
+<h3 title="I love Minimax" style="text-align:center;">What is the Minimax Algorithm?</h3>
+<hr>
+<p style="text-align:center;"><a href="https://www.youtube.com/redirect?q=https%3A%2F%2Fmedium.freecodecamp.org%2Fhow-to-make-your-tic-tac-toe-game-unbeatable-by-using-the-minimax-algorithm-9d690bad4b37&v=P2TcQ3h0ipQ&redir_token=QUFFLUhqbmNqcVBHRHlWbU1SSnJYemxNbC1LdE5CLThsd3xBQ3Jtc0tsVHFWLUJmYlNLV2VGNGRxc2tPY09aTnNYSzh6ak5uZDNWLVlEYzN2U2ZHTDU3Nlc3VzYtQTJPdXhHX3NZeEpzY0Nia01nVzZGTlhiM0RSOXY0WC1qSU9hWl8yeU5vdDdVOHBKdlpPUlo2T2dLaks3MA%3D%3D&event=video_description">Link to Website</a></p>
+<p>A Minimax Algorithm is a recursive algorithm that can be described in the following steps:</p>
+<ul style="list-style-type: square;"><li>return a value if a terminal state is found (+10, 0, -10)</li><li>go through available spots on the board</li><li>call the minimax function on each available spot (recursion)</li><li>evaluate returning values from function calls</li><li>and return the best value</li></ul>
+</div>
+
+<div id="Learn" class="w3-container tab" style="display:none;">
+<h3 style="text-align:center;">Languages used:</h3>
+<hr>
+<ul style="list-style-type: square;"><li>HTML</li><li>CSS</li><li>JavaScript</li></ul>
+</div> 
+
+
+<div id="Facts" class="w3-container tab" style="display:none;">
+<h3 style="text-align:center;">Last Updated:</h3>
+<hr>
+<p>10/28/2020 9:17am Sprint 5</p>
+</div> 
+
+
+
+<div id="Innovations" class="w3-container tab" style="display:none;">
+<h3 style="text-align:center;">Features:</h3>
+<hr>
+<p>In the time that we are allowed, we believe that we can make a functioning unbeatable AI that plays Tic Tac Toe perfectly. If we had more time we would like to change from regular Tic Tac Toe to 3D Tic Tac Toe. This would be a very big change. The technical features being used that we learned in class are designing webpages with HTML and CSS, as well as making our webpage interactive. The technical features that we are using that go beyond what we learned in class are the use of Artificial Intelligence and common AI algorithms, as well as programming in JavaScript.</p>
+</div>
+    
+   
+    
+
+
+</body>
+</html>
